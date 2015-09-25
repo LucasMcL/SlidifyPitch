@@ -1,0 +1,95 @@
+---
+title       : The Golden Ratio
+subtitle    : Some interesting properties
+author      : Lucas McLaughlin
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## What is the Golden Ratio?
+
+- The golden ratio is a mathematical constant that can be discovered as follows:
+  - Given a line segmend, divide it into two sections, a and b.
+  - Adjust the length of a so that the ratio of the total length to a is equal to the ratio of a to b.
+  - This ratio is approximately 1.618... and is defined as the golden ratio  
+    
+    
+![The Golden Section](golden-section.jpg)
+
+---
+
+## The Golden Ratio (con't)
+
+- The exact value of the Golden Ratio is as follows:
+$$ \phi = \frac12 + \frac{\sqrt5}2 = \frac{1 + \sqrt5}2 $$
+- It can also be approximated using the fibonacci and another iterative process.
+- My Shiny app uses interactive elements to demonstrate this.
+- The following slides contain some examples from the web app.
+
+---
+
+
+## The Fibonacci Sequence
+
+- This image shows fibonacci ratios (that is, the value of one fibonacci number divided by the previous) at various points in the fibonacci sequence.
+- As you can see, these ratios converge to the golden ratio.
+- In the web app, the user will be able to input different values for n and see different graphs.
+
+```{r fibPlot, echo = FALSE, fig.align='center', fig.height=5}
+make_fibRatios <- function(n){
+  ratios <- numeric(length = n - 1)
+  fibSequence <- fibonacci(n, sequence = T)
+  
+  for(i in 1:(n-1)){
+    ratios[i] <- round(fibSequence[i + 1] / fibSequence[i], 3)
+  }
+  ratios
+}
+n = 6
+df <- data.frame(x = 1:(n-1), y = make_fibRatios(n))
+g <- ggplot(df, aes(x = x, y = y))
+g + geom_line() + geom_hline(aes(yintercept = 1.618)) +
+    ggtitle("Fibonacci Ratios") +
+    xlab("nth Fibonacci Ratio") + ylab("Ratio") +
+    geom_text(data = NULL, x = .75 * n, y = 1.9, label = paste("n =", n)) +
+    geom_text(data = NULL, x = .75 * n, y = 1.8, label = paste("Fibonacci ratio =", df$y[n-1])) +
+    geom_text(data = NULL, x = .75 * n, y = 1.7, label = paste("Golden ratio =", 1.618))
+```
+
+---
+
+
+## A Simple Algorithm
+
+- The following iterative process also converges to the golden ratio: $$ \frac1x + 1 $$
+- My web app allows the user to pick a starting number and then view the first 10 iterations.
+- Here is an exmaple using the starting number 5 and only showing 6 iterations.
+
+```{r itFig, echo = FALSE, fig.height = 3, fig.align = "center", results = "asis"}
+library(xtable)
+make_iterations <- function(x){
+  iterations <- character(length = 10)
+  for(i in 1:10){
+    iterations[i] <- paste("1 /", round(x, 3), "+ 1 =", round(1/x+1, 3))
+    x <- 1/x + 1
+  }
+  iterations
+}
+x <- 5
+its <- make_iterations(x)
+table <- data.frame(x = its[1:6])
+xt <- xtable(table)
+print(xt, type = "html")
+```
+
+---
+
+## References
+
+-[Mathisfun.com](https://www.mathsisfun.com/numbers/golden-ratio.html)  
+
+-[Wikipedia.com](https://en.wikipedia.org/wiki/Golden_ratio)
